@@ -1,0 +1,8 @@
+{
+  "en": {
+    "DOWNPOUR_TITLE": "Downpour",
+    "DOWNPOUR_DESC": "Experimental gamemode, a race against time. Test your agility with this extra challenge.",
+    "BRIMSTONE_TITLE": "Brimstone",
+    "BRIMSTONE_DESC": "Fusion gamemode between Downpour and Inferno, the true challenge. Do not look away from start to finish.\n\n{INFERNO}"
+  }
+}
