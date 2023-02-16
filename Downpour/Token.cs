@@ -40,14 +40,13 @@ namespace Downpour
             };
         }
 
+        public static List<string> extraSpaces = new() { "INFERNO_NAME", "BRIMSTONE_NAME", "CALYPSO_NAME", "TEMPEST_NAME", "SCYLLA_NAME" };
         public static string GetDescription(string orig, DifficultyDef def)
         {
-            if (DownpourPlugin.BrimstoneList.Contains(def)) { if (!DownpourPlugin.EnableBrimstone.Value) return orig; }
-            else if (DownpourPlugin.DownpourList.Contains(def)) { if (!DownpourPlugin.EnableDownpour.Value) return orig; }
-            else if (def.nameToken == "INFERNO_NAME") { if (!DownpourPlugin.EnableInferno.Value) return orig; }
-            else { if (!DownpourPlugin.EnableRework.Value) return orig; }
+            bool simulacrum = (PreGameController.instance?.gameModeIndex != null) && GameModeCatalog.GetGameModeName(PreGameController.instance.gameModeIndex).Contains("InfiniteTowerRun");
+            if (!Hooks.Enabled(def, simulacrum)) return orig;
             DownpourPlugin.Log.LogDebug("Applying downpour description for Difficulty " + def.nameToken);
-            Match m = Regex.Match(orig, ">Difficulty Scaling: <style=\\w+>.+?</style>");
+            Match m = Regex.Match(orig.ToLower(), ">\\s*difficulty\\s*scaling:\\s*<style=\\w+>.+?</style>");
             string desc = orig;
             int idx;
             #region Make sure cStack is applied & find replacement point (mess)
@@ -68,47 +67,53 @@ namespace Downpour
             #endregion
             string str = "<style=cStack>";
             float baseScaling = GetBaseScaling(def); if (baseScaling != 0) str += $">Difficulty Scaling: <style={(baseScaling < 0 ? "cIsHealing" : "cIsHealth")}>{PercentFormat(baseScaling)}%</style>\n";
-            float stageScaling = GetStageScaling(def); if (stageScaling != 0) str += $">Linear Difficulty Scaling: <style={(stageScaling < 0 ? "cIsHealing" : "cIsHealth")}>{PercentFormat(stageScaling)}% per stage</style>\n";
-            float scaling = GetScaling(def); if (scaling != 0) str += $">Exponential Difficulty Scaling:\n    <style=cIsHealth>x115% every {scaling / 60} minute{(scaling > 60 ? "s" : "")}</style>\n";
-            float tempScaling = GetTempScaling(def); if (tempScaling != 0) str += $">Temporary Difficulty Scaling:\n    <style=cIsHealth>x115% every {tempScaling / 60} minute{(tempScaling > 60 ? "s" : "")}, resets every stage</style>\n";
-            if (def.nameToken == "INFERNO_NAME") str = str.Substring(0, str.Length - 1); // remove trailing \n
+            float stageScaling = GetStageScaling(def, simulacrum); if (stageScaling != 0) str += $">Linear Difficulty Scaling: <style={(stageScaling < 0 ? "cIsHealing" : "cIsHealth")}>{PercentFormat(stageScaling)}% per stage</style>\n";
+            float scaling = GetScaling(def, simulacrum); if (scaling != 0) str += $">Exponential Difficulty Scaling:\n    <style=cIsHealth>x115% every {scaling / 60} minute{(scaling > 60 ? "s" : "")}</style>\n";
+            float tempScaling = GetTempScaling(def, simulacrum); if (tempScaling != 0) str += $">Temporary Difficulty Scaling:\n    <style=cIsHealth>x115% every {tempScaling / 60} minute{(tempScaling > 60 ? "s" : "")}, resets every stage</style>\n";
+            if (extraSpaces.Contains(def.nameToken)) str = str.Substring(0, str.Length - 1); // remove trailing \n
             str += "</style>"; 
             return desc.Slice(0, idx) + str + desc.Slice(idx);
         }
 
         public static string PercentFormat(float val) { return (val > 0 ? "+" : "") + (val * 100).ToString(); }
 
-        public static float GetBaseScaling(DifficultyDef def)
+        public static float GetBaseScaling(DifficultyDef def, bool simulacrum = false)
         {
             if (DownpourPlugin.BrimstoneList.Contains(def)) return (DownpourPlugin.InitialScalingBrimstone.Value - 2) * 0.5f;
             if (DownpourPlugin.DownpourList.Contains(def)) return (DownpourPlugin.InitialScalingDownpour.Value - 2) * 0.5f;
             return (def.scalingValue + DownpourPlugin.InitialScaling.Value - 2) * 0.5f;
         }
-        public static float GetStageScaling(DifficultyDef def)
+        public static float GetStageScaling(DifficultyDef def, bool simulacrum = false)
         {
-            if (DownpourPlugin.BrimstoneList.Contains(def)) return DownpourPlugin.StageScalingBrimstone.Value;
-            if (DownpourPlugin.DownpourList.Contains(def)) return DownpourPlugin.StageScalingDownpour.Value;
-            return DownpourPlugin.StageScaling.Value;
+            if (DownpourPlugin.BrimstoneList.Contains(def)) return DownpourPlugin.StageScalingBrimstone.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScalingBrimstone.Value : 1);
+            if (DownpourPlugin.DownpourList.Contains(def)) return DownpourPlugin.StageScalingDownpour.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScalingDownpour.Value : 1);
+            return DownpourPlugin.StageScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScaling.Value : 1);
         }
-        public static float GetScaling(DifficultyDef def)
+
+        public static float GetScaling(DifficultyDef def, bool simulacrum = false)
         {
-            if (DownpourPlugin.BrimstoneList.Contains(def)) return DownpourPlugin.ScalingBrimstone.Value;
-            if (DownpourPlugin.DownpourList.Contains(def)) return DownpourPlugin.ScalingDownpour.Value;
-            if (def.nameToken == "INFERNO_NAME") return DownpourPlugin.ScalingInferno.Value;
+            if (DownpourPlugin.BrimstoneList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingBrimstone.Value, simulacrum, DownpourPlugin.SimulacrumBaseBrimstone.Value, DownpourPlugin.SimulacrumScalingBrimstone.Value);
+            if (DownpourPlugin.DownpourList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingDownpour.Value, simulacrum, DownpourPlugin.SimulacrumBaseDownpour.Value, DownpourPlugin.SimulacrumScalingDownpour.Value);
+            if (def.nameToken == "INFERNO_NAME") return GetScalingInternal(DownpourPlugin.ScalingInferno.Value, simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value);
 
             float mult = (DownpourPlugin.ScalingDrizzle.Value - DownpourPlugin.ScalingMonsoon.Value) / 2;
             float init = DownpourPlugin.ScalingDrizzle.Value + mult;
-            return Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue));
+            return GetScalingInternal(Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value);
         }
-        public static float GetTempScaling(DifficultyDef def)
+        public static float GetScalingInternal(float orig, bool simulacrum, float simulinit, float simulmult)
         {
-            if (DownpourPlugin.BrimstoneList.Contains(def)) return DownpourPlugin.ScalingBrimstone.Value * DownpourPlugin.TempScalingBrimstone.Value;
-            if (DownpourPlugin.DownpourList.Contains(def)) return DownpourPlugin.ScalingDownpour.Value * DownpourPlugin.TempScalingDownpour.Value;
-            if (def.nameToken == "INFERNO_NAME") return DownpourPlugin.ScalingInferno.Value * DownpourPlugin.TempScaling.Value;
+            if (simulacrum) return (orig + simulinit) * simulmult;
+            return orig;
+        }
+        public static float GetTempScaling(DifficultyDef def, bool simulacrum = false)
+        {
+            if (DownpourPlugin.BrimstoneList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingBrimstone.Value, simulacrum, DownpourPlugin.SimulacrumBaseBrimstone.Value, DownpourPlugin.SimulacrumScalingBrimstone.Value) * DownpourPlugin.TempScalingBrimstone.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScalingBrimstone.Value : 1);
+            if (DownpourPlugin.DownpourList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingDownpour.Value, simulacrum, DownpourPlugin.SimulacrumBaseDownpour.Value, DownpourPlugin.SimulacrumScalingDownpour.Value) * DownpourPlugin.TempScalingDownpour.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScalingDownpour.Value : 1);
+            if (def.nameToken == "INFERNO_NAME") return GetScalingInternal(DownpourPlugin.ScalingInferno.Value, simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value) * DownpourPlugin.TempScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScaling.Value : 1);
 
             float mult = (DownpourPlugin.ScalingDrizzle.Value - DownpourPlugin.ScalingMonsoon.Value) / 2;
             float init = DownpourPlugin.ScalingDrizzle.Value + mult;
-            return Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)) * DownpourPlugin.TempScaling.Value;
+            return GetScalingInternal(Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value) * DownpourPlugin.TempScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScaling.Value : 1);
         }
     }
     public static class Extension

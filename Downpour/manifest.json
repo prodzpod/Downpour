@@ -1,0 +1,11 @@
+{
+  "name": "Downpour",
+  "version_number": "1.0.2",
+  "website_url": "https://github.com/prodzpod/Downpour",
+  "description": "Fighting Time itself: Custom difficulty and difficulty overhaul mod, encouraging faster gameplay.",
+  "dependencies": [
+    "bbepis-BepInExPack-5.4.2102",
+    "RiskofThunder-R2API_Difficulty-1.0.2",
+	  "RiskofThunder-HookGenPatcher-1.2.3"
+  ]
+}

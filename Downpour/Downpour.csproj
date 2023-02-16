@@ -67,10 +67,16 @@
 	  <Reference Include="UnityEngine.CoreModule">
 	    <HintPath>libs\UnityEngine.CoreModule-nstrip.dll</HintPath>
 	  </Reference>
+	  <Reference Include="WellRoundedBalance">
+	    <HintPath>libs\WellRoundedBalance-nstrip.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="Lang\en.language">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="manifest.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="downpour">
