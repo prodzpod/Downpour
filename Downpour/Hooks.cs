@@ -6,8 +6,10 @@ using MonoMod.Cil;
 using R2API;
 using RoR2;
 using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Downpour
 {
@@ -17,21 +19,26 @@ namespace Downpour
         public static int trueAmbientLevelFloor = -1;
         public static int previousAmbientLevelFloor = -1;
         public static bool onAmbientLevelUpEnabled = false;
+        public static float targetTime = 0;
         public static void Patch()
         {
-            Run.onRunStartGlobal += (run) => { lastStageTime = 0; trueAmbientLevelFloor = -1; previousAmbientLevelFloor = -1; Run.ambientLevelCap = int.MaxValue; };
+            Run.onRunStartGlobal += (run) => { targetTime = DownpourPlugin.AutoAdvance[0].Value * 60f; lastStageTime = 0; trueAmbientLevelFloor = -1; previousAmbientLevelFloor = -1; Run.ambientLevelCap = int.MaxValue; };
             Stage.onStageStartGlobal += (stage) => { lastStageTime = Run.instance.GetRunStopwatch(); };
             if (Chainloader.PluginInfos.ContainsKey("com.Wolfo.LittleGameplayTweaks")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWolfoSimu));
             if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWRB));
+            On.RoR2.LevelUpEffectManager.OnRunAmbientLevelUp += (orig, run) => { if (run.ambientLevelFloor > 100) return; orig(run); };
+            On.RoR2.LevelUpEffectManager.OnCharacterLevelUp += (orig, body) => { if (body?.teamComponent?.teamIndex != null && body.teamComponent.teamIndex != TeamIndex.Player && Run.instance.ambientLevelFloor > 100) return; orig(body); };
         }
         public static void PatchRun(Run run)
         {
+            if (DownpourPlugin.DEBUG) On.RoR2.Run.FixedUpdate += Run_FixedUpdate;
             if (!Enabled(run)) return;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += Run_RecalculateDifficultyCoefficentInternal;
             IL.RoR2.InfiniteTowerRun.RecalculateDifficultyCoefficentInternal += InfiniteTowerRun_RecalculateDifficultyCoefficentInternal;
         }
         public static void UnpatchRun(Run _)
         {
+            if (DownpourPlugin.DEBUG) On.RoR2.Run.FixedUpdate -= Run_FixedUpdate;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Run_RecalculateDifficultyCoefficentInternal;
             IL.RoR2.InfiniteTowerRun.RecalculateDifficultyCoefficentInternal -= InfiniteTowerRun_RecalculateDifficultyCoefficentInternal;
         }
@@ -59,17 +66,30 @@ namespace Downpour
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<Run, float>>(self => (self.compensatedDifficultyCoefficient - 1) * 3 + 1);
         }
+        public static string[] targetStage = new string[] { "golemplains", "goolake", "frozenwall", "shipgraveyard", "slumberingsatellite" };
+        public static void Run_FixedUpdate(On.RoR2.Run.orig_FixedUpdate orig, Run self)
+        {
+            orig(self);
+            if (self.GetRunStopwatch() >= targetTime)
+            {
+                int idx = (self.stageClearCount + 1) % 5;
+                targetTime += DownpourPlugin.AutoAdvance[idx].Value * 60f;
+                RoR2.Console.instance.SubmitCmd(null, "next_stage " + targetStage[idx]);
+            }
+        }
         public static void PatchSimulacrum(Run run)
         {
             if (run is not InfiniteTowerRun) return;
             On.RoR2.InfiniteTowerWaveController.Initialize += InfiniteTowerWaveController_Initialize;
             On.RoR2.InfiniteTowerWaveController.FixedUpdate += InfiniteTowerWaveController_FixedUpdate;
+            CharacterBody.onBodyStartGlobal += CharacterBody_OnBodyStartGlobal;
         }
         public static void UnpatchSimulacrum(Run run)
         {
             if (run is not InfiniteTowerRun) return;
             On.RoR2.InfiniteTowerWaveController.Initialize -= InfiniteTowerWaveController_Initialize;
             On.RoR2.InfiniteTowerWaveController.FixedUpdate -= InfiniteTowerWaveController_FixedUpdate;
+            CharacterBody.onBodyStartGlobal -= CharacterBody_OnBodyStartGlobal;
         }
         public static void InfiniteTowerWaveController_Initialize(On.RoR2.InfiniteTowerWaveController.orig_Initialize orig, InfiniteTowerWaveController self, int index, Inventory inv, GameObject target)
         {
@@ -95,6 +115,16 @@ namespace Downpour
             }
         }
 
+        public static void CharacterBody_OnBodyStartGlobal(CharacterBody body)
+        {
+            if ((body.name.Contains("Brother") || body.name.Contains("TitanGold") || body.name.Contains("EquipmentDrone") || body.name.Contains("SuperRoboBallBoss")) && (Run.instance as InfiniteTowerRun).waveIndex < 50)
+            {
+                body.baseMaxHealth *= DownpourPlugin.SimulacrumBossHealth.Value;
+                body.RecalculateStats();
+                body.healthComponent.Networkhealth = body.maxHealth;
+            }
+        }
+
         [HarmonyPatch(typeof(DifficultyAPI), nameof(DifficultyAPI.InitialiseRuleBookAndFinalizeList))]
         public class PatchOrder
         {
@@ -106,14 +136,17 @@ namespace Downpour
                     DifficultyDef def = DifficultyCatalog.GetDifficultyDef(choice.difficultyIndex);
                     Token.descs.Add(def.descriptionToken, def);
                 }
-                if (DownpourPlugin.EnableDownpour.Value || DownpourPlugin.EnableBrimstone.Value) __result.choices.Sort((x, y) =>
-                {
-                    DifficultyDef xDef = DifficultyCatalog.GetDifficultyDef(x.difficultyIndex);
-                    DifficultyDef yDef = DifficultyCatalog.GetDifficultyDef(y.difficultyIndex);
-                    float xValue = xDef.scalingValue + (1000 * (DownpourPlugin.DownpourList.Contains(xDef) ? 1 : 0)) + (1000 * (DownpourPlugin.BrimstoneList.Contains(xDef) ? 1 : 0));
-                    float yValue = yDef.scalingValue + (1000 * (DownpourPlugin.DownpourList.Contains(yDef) ? 1 : 0)) + (1000 * (DownpourPlugin.BrimstoneList.Contains(yDef) ? 1 : 0));
-                    return xValue.CompareTo(yValue);
-                });
+                if (DownpourPlugin.EnableDownpour.Value || DownpourPlugin.EnableBrimstone.Value) __result.choices.Sort((x, y) => 
+                GetSortValue(DifficultyCatalog.GetDifficultyDef(x.difficultyIndex))
+                .CompareTo(GetSortValue(DifficultyCatalog.GetDifficultyDef(y.difficultyIndex))));
+            }
+
+            public static float GetSortValue(DifficultyDef def)
+            {
+                return def.scalingValue
+                    + (5.9f * (def.nameToken == "INFERNO_NAME" ? 1 : 0))
+                    + (1000 * (DownpourPlugin.DownpourList.Contains(def) ? 1 : 0))
+                    + (1000 * (DownpourPlugin.BrimstoneList.Contains(def) ? 1 : 0));
             }
         }
 
@@ -179,7 +212,7 @@ namespace Downpour
             // bless you aaron
             public static MethodBase TargetMethod()
             {
-                return AccessTools.DeclaredMethod(typeof(WellRoundedBalance.Mechanic.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all), $"<{nameof(WellRoundedBalance.Mechanic.Scaling.TimeScaling.ChangeBehavior)}>b__12_0");
+                return AccessTools.DeclaredMethod(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all), $"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>b__12_0");
             }
         }
 
@@ -188,6 +221,7 @@ namespace Downpour
         {
             if (!DownpourPlugin.DownpourList.Contains(def)) // enables
             {
+                if (def.nameToken == "SUNNY_NAME") return false;
                 if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance") && !isSimulacrum && WRBTweaksOn()) return false;
                 if (def.nameToken == "INFERNO_NAME") { if (!DownpourPlugin.EnableInferno.Value) return false; }
                 else { if (!DownpourPlugin.EnableRework.Value) return false; }
@@ -196,11 +230,7 @@ namespace Downpour
         }
         public static bool WRBTweaksOn() 
         {
-            if (!Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance")) return false; // just in case
-            ConfigEntry<bool> entry = null;
-            WellRoundedBalance.Main.WRBMechanicConfig.TryGetEntry(":: Mechanics : Scaling", "Enable Changes?", out entry);
-            if (entry == null || entry.Value) return true;
-            else return false;
+            return WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance.isEnabled; // based
         }
 
         public static float GetCoeff(float _, Run self)
@@ -266,5 +296,36 @@ namespace Downpour
             return GetStageScaleInternal(def.scalingValue + DownpourPlugin.InitialScaling.Value + (stage * DownpourPlugin.StageScaling.Value), people) * (simulacrum ? DownpourPlugin.SimulacrumStageScaling.Value : 1); // normal, inferno
         }
         public static float GetStageScaleInternal(float coeff, int people) { return 0.0506f * coeff * Mathf.Pow(people, 0.2f); }
+
+        public static void PatchGup()
+        {
+            foreach (var rawBody in new string[] { "Gup", "Geep", "Gip" })
+            {
+                CharacterBody body = Addressables.LoadAssetAsync<GameObject>($"RoR2/DLC1/Gup/{rawBody}Body.prefab").WaitForCompletion().GetComponent<CharacterBody>();
+                body.baseMaxHealth *= 0.75f;
+                body.levelMaxHealth *= 0.75f;
+                body.baseRegen = 0;
+                body.levelRegen = 0;
+                if (rawBody != "Gup")
+                {
+                    body.baseDamage *= 4f / 3f;
+                    body.levelDamage *= 4f / 3f;
+                    body.baseMoveSpeed *= 1.5f; // zoom
+                    body.levelMoveSpeed *= 1.5f;
+                }
+            }
+            IL.RoR2.MasterSummon.Perform += (il) =>
+            {
+                ILCursor c = new(il);
+                c.GotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TeamComponent>(nameof(TeamComponent.GetTeamMembers)));
+                c.Emit(OpCodes.Dup);
+                c.Index++;
+                c.EmitDelegate<Func<ReadOnlyCollection<TeamComponent>, int, int>>((list, orig) =>
+                {
+                    foreach (TeamComponent team in list) if (team.body != null && team.body.name.Contains("GupBody")) orig += 2;
+                    return orig;
+                });
+            };
+        }
     }
 }

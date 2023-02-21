@@ -1,11 +1,21 @@
 # Downpour: Fighting Time
+
+![Remember that as time increases, so does difficulty.](https://cdn.discordapp.com/attachments/567832879879553037/1075841504834224239/image.png)
+
 > Also known as "Woolie's Paradise" by nobody
 
-Downpour is a difficulty mod that reworks the current leveling system to encourage rushing and going fast, as the game was intended. The goal of the mod is to make the early-game easier while farming gold for items and staying ahead of the curve a choice players have to make constantly.
+Downpour is a difficulty mod that reworks the current leveling system to encourage fast-paced gameplay. The goal of the mod is to make the early-game easier while farming gold for items and staying ahead of the curve a choice players have to make constantly. Remember, **leaving chests behind** is a viable strategy in Downpour. you will have to give up some loot to stay ahead of the scale.
 
 Also changes simulacrum to be much faster paced. Aim for wave 50!
 
++Also changes gup to be less tanky but more dangerous on split.
+
 ## How it works
+<a href="https://www.youtube.com/watch?v=W0VlysVaudI">![Video](https://media.discordapp.net/attachments/515678821408571392/1077735348014153798/RoR2__Downpour_Difficulty_Scale_Comparison_0-24_screenshot.png?width=1098&height=618)</a>
+
+<center>(Click for video)</center>
+
+## How it works (for nerds)
 Lets look at vanilla scaling first.
 
 ![Vanilla Scaling Function](https://cdn.discordapp.com/attachments/515678914316861451/1075613757180481656/image.png)
@@ -51,6 +61,8 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - [Risk of Options](https://thunderstore.io/package/Rune580/Risk_Of_Options/): Adds in-game tweaking of all scaling values the mod provides.
 - [Inferno](https://thunderstore.io/package/HIFU/Inferno/): Adds a special "Inferno Downpour" difficulty that is a fusion between Downpour and Inferno.
 - [FasterBossWait2](https://thunderstore.io/package/prodzpod/FasterBossWait2/): Reduces holdout time without removing it outright. Mod is balanced around having this.
+- [ResumeMusicPostTeleporter](https://thunderstore.io/package/prodzpod/ResumeMusicPostTeleporter/): Resumes stage music after the teleporter event has been completed. If you're rushing, you'll encounter a lot of silence.
+- [BetterMoonPillars](https://thunderstore.io/package/prodzpod/BetterMoonPillars/): Reworks moon pillars to be optional but rewards you with items and time. Makes the mithrix fight easier without looping.
 - [LittleGameplayTweaks](https://thunderstore.io/package/Wolfo/LittleGameplayTweaks/): Set `4ba - Simulacrum Ending > Ending Start Wave` and `4bb - Simulacrum Forced Boss > Forced Special Boss Start Wave` to `50` for a finite simulacrum experience.
 
 ## Compatibility Stuff
@@ -59,6 +71,9 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - Well Rounded Balance: Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
 
 ## Changelog
+- 1.0.5: updated compat, nerfed gup
+- 1.0.4: Added simulacrum boss health multiplier before wave 50 (forgot)
+- 1.0.3: Stops vfx after level 100 to prevent lag/sfx spam
 - 1.0.2: Bugfix, nerfed simulacrum further to RMB levels
 - 1.0.1: IL is no longer hijacked, WRB "compat", Default Simulacrum scaling nerfed, better README, fixed description inaccuracy with some modded difficulties
 - 1.0.0: Initial Release.

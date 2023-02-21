@@ -58,6 +58,12 @@
 	  <Reference Include="RoR2BepInExPack">
 	    <HintPath>libs\RoR2BepInExPack-nstrip.dll</HintPath>
 	  </Reference>
+	  <Reference Include="Unity.Addressables">
+	    <HintPath>..\..\RiskyMonkeyBase\RiskyMonkeyBase\libs\Unity.Addressables-nstrip.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Unity.ResourceManager">
+	    <HintPath>..\..\RiskyMonkeyBase\RiskyMonkeyBase\libs\Unity.ResourceManager-nstrip.dll</HintPath>
+	  </Reference>
 	  <Reference Include="UnityEngine">
 	    <HintPath>libs\UnityEngine-nstrip.dll</HintPath>
 	  </Reference>

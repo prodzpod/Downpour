@@ -40,7 +40,7 @@ namespace Downpour
             };
         }
 
-        public static List<string> extraSpaces = new() { "INFERNO_NAME", "BRIMSTONE_NAME", "CALYPSO_NAME", "TEMPEST_NAME", "SCYLLA_NAME" };
+        public static List<string> extraSpaces = new() { "INFERNO_NAME", "BRIMSTONE_NAME", "CALYPSO_NAME", "TEMPEST_NAME", "SCYLLA_NAME", "SS2_DIFFICULTY_TYPHOON_DESC" };
         public static string GetDescription(string orig, DifficultyDef def)
         {
             bool simulacrum = (PreGameController.instance?.gameModeIndex != null) && GameModeCatalog.GetGameModeName(PreGameController.instance.gameModeIndex).Contains("InfiniteTowerRun");
@@ -87,7 +87,7 @@ namespace Downpour
         {
             if (DownpourPlugin.BrimstoneList.Contains(def)) return DownpourPlugin.StageScalingBrimstone.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScalingBrimstone.Value : 1);
             if (DownpourPlugin.DownpourList.Contains(def)) return DownpourPlugin.StageScalingDownpour.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScalingDownpour.Value : 1);
-            return DownpourPlugin.StageScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScaling.Value : 1);
+            return DownpourPlugin.StageScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumStageScaling.Value : 1) * 0.25f;
         }
 
         public static float GetScaling(DifficultyDef def, bool simulacrum = false)

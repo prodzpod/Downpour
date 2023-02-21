@@ -29,6 +29,7 @@ namespace Downpour
             AddOption(DownpourPlugin.SimulacrumTempScaling, 0, 5, 0.05f);
             AddOption(DownpourPlugin.SimulacrumStageScaling, -5, 5, 0.05f);
             AddOption(DownpourPlugin.SimulacrumCountdown, 0, 20, 1);
+            AddOption(DownpourPlugin.SimulacrumBossHealth, 0, 5, 0.05f);
 
             AddOption(DownpourPlugin.ScalingDownpour, 0, 1200, 15);
             AddOption(DownpourPlugin.TempScalingDownpour, 0, 5, 0.05f);
@@ -48,6 +49,8 @@ namespace Downpour
             AddOption(DownpourPlugin.SimulacrumTempScalingBrimstone, 0, 5, 0.05f);
             AddOption(DownpourPlugin.SimulacrumStageScalingBrimstone, -5, 5, 0.05f);
             AddOption(DownpourPlugin.SimulacrumCountdownDownpour, 0, 20, 1);
+
+            if (DownpourPlugin.DEBUG) foreach (var config in DownpourPlugin.AutoAdvance) AddOption(config, 0, 20, 1);
         }
 
         public static void AddOption(ConfigEntry<bool> entry, bool restart = false)

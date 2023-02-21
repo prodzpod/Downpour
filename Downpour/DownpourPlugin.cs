@@ -3,16 +3,12 @@ using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 using R2API;
 using R2API.Utils;
 using RoR2;
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Downpour
 {
@@ -28,7 +24,7 @@ namespace Downpour
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "prodzpod";
         public const string PluginName = "Downpour";
-        public const string PluginVersion = "1.0.2";
+        public const string PluginVersion = "1.0.5";
 
         public static ManualLogSource Log;
         public static Harmony Harmony;
@@ -50,6 +46,7 @@ namespace Downpour
         public static ConfigEntry<bool> EnableDownpour;
         public static ConfigEntry<bool> EnableBrimstone;
         public static ConfigEntry<bool> FasterSimulacrum;
+        public static ConfigEntry<bool> GupNerf;
         public static ConfigEntry<float> ScalingDrizzle;
         public static ConfigEntry<float> ScalingMonsoon;
         public static ConfigEntry<float> ScalingInferno;
@@ -62,6 +59,7 @@ namespace Downpour
         public static ConfigEntry<float> SimulacrumTempScaling;
         public static ConfigEntry<float> SimulacrumStageScaling;
         public static ConfigEntry<float> SimulacrumCountdown;
+        public static ConfigEntry<float> SimulacrumBossHealth;
         public static ConfigEntry<float> ScalingDownpour;
         public static ConfigEntry<float> TempScalingDownpour;
         public static ConfigEntry<float> InitialScalingDownpour;
@@ -79,12 +77,15 @@ namespace Downpour
         public static ConfigEntry<float> SimulacrumScalingBrimstone;
         public static ConfigEntry<float> SimulacrumTempScalingBrimstone;
         public static ConfigEntry<float> SimulacrumStageScalingBrimstone;
+        public static List<ConfigEntry<float>> AutoAdvance = new();
         public static DifficultyDef Downpour;
         public static DifficultyIndex DownpourIndex;
         public static DifficultyDef Brimstone;
         public static DifficultyIndex BrimstoneIndex;
         public static List<DifficultyDef> DownpourList = new();
         public static List<DifficultyDef> BrimstoneList = new();
+
+        public const bool DEBUG = false;
 
         public void Awake()
         {
@@ -98,6 +99,7 @@ namespace Downpour
             EnableDownpour = Config.Bind("Modules", "Enable Downpour Difficulty", true, "Downpour will be added.");
             EnableBrimstone = Config.Bind("Modules", "Enable Brimstone Difficulty", true, "Brimstone will be added.");
             FasterSimulacrum = Config.Bind("Modules", "Faster Simulacrum", true, "Force spawns more enemies upon all kill mid-wave.");
+            GupNerf = Config.Bind("Modules", "Gup Rework", true, "Hopoo why (disables base regen and reduces health. Damage/speed increase for split versions instead.)");
 
             ScalingDrizzle = Config.Bind("Difficulty Rework", "Drizzle Scaling Seconds", 600f, "Will be used with monsoon to calculate all difficulty.");
             ScalingMonsoon = Config.Bind("Difficulty Rework", "Monsoon Scaling Seconds", 300f, "Will be used with drizzle to calculate all difficulty.");
@@ -112,6 +114,7 @@ namespace Downpour
             SimulacrumStageScaling = Config.Bind("Difficulty Rework", "Simulacrum Stage Scaling Multiplier", 1f, "Stage scaling multiplier for simulacrum, takes simulacrum scaling.");
 
             SimulacrumCountdown = Config.Bind("Difficulty Rework", "Simulacrum Countdown", 3f, "Instead of the usual 10 seconds.");
+            SimulacrumBossHealth = Config.Bind("Difficulty Rework", "Simulacrum Special Boss Health before Wave 50", 0.33f, "It kills your run on full health");
 
             ScalingDownpour = Config.Bind("Downpour", "Downpour Scaling Seconds", 180f, "Special exception. set to 0 to disable.");
             TempScalingDownpour = Config.Bind("Downpour", "Downpour Temporary Scaling Multiplier", 0.5f, "Special exception.");
@@ -132,6 +135,7 @@ namespace Downpour
             SimulacrumScalingBrimstone = Config.Bind("Downpour", "Brimstone Simulacrum Scaling Seconds Multiplier", 2.5f, "Special exception.");
             SimulacrumTempScalingBrimstone = Config.Bind("Downpour", "Brimstone Simulacrum Temporary Scaling Seconds Multiplier", 2f, "Special exception.");
             SimulacrumStageScalingBrimstone = Config.Bind("Downpour", "Brimstone Simulacrum Temporary Stage Seconds Multiplier", 1f, "Special exception.");
+            if (DEBUG) for (var i = 1; i <= 5; i++) AutoAdvance.Add(Config.Bind("Debug", $"Auto Advance Stage {i} min", 3f, "dont touch"));
 
             if (Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions")) Options.Patch();
 
@@ -143,6 +147,7 @@ namespace Downpour
             Run.onRunDestroyGlobal -= Hooks.PatchRun;
             Run.onRunStartGlobal += Hooks.PatchSimulacrum;
             Run.onRunDestroyGlobal -= Hooks.PatchSimulacrum;
+            if (GupNerf.Value) Hooks.PatchGup();
             RoR2Application.onLoad += Token.Patch;
         }
 
