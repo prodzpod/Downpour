@@ -22,7 +22,7 @@ namespace Downpour
         public static float targetTime = 0;
         public static void Patch()
         {
-            Run.onRunStartGlobal += (run) => { targetTime = DownpourPlugin.AutoAdvance[0].Value * 60f; lastStageTime = 0; trueAmbientLevelFloor = -1; previousAmbientLevelFloor = -1; Run.ambientLevelCap = int.MaxValue; };
+            Run.onRunStartGlobal += (run) => { if (DownpourPlugin.DEBUG) targetTime = DownpourPlugin.AutoAdvance[0].Value * 60f; lastStageTime = 0; trueAmbientLevelFloor = -1; previousAmbientLevelFloor = -1; Run.ambientLevelCap = int.MaxValue; };
             Stage.onStageStartGlobal += (stage) => { lastStageTime = Run.instance.GetRunStopwatch(); };
             if (Chainloader.PluginInfos.ContainsKey("com.Wolfo.LittleGameplayTweaks")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWolfoSimu));
             if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWRB));
@@ -226,6 +226,7 @@ namespace Downpour
                 if (def.nameToken == "INFERNO_NAME") { if (!DownpourPlugin.EnableInferno.Value) return false; }
                 else { if (!DownpourPlugin.EnableRework.Value) return false; }
             }
+            DownpourPlugin.Log.LogDebug("Downpour is enabled for " + Language.GetString(def.nameToken));
             return true;
         }
         public static bool WRBTweaksOn() 

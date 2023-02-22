@@ -71,6 +71,7 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - Well Rounded Balance: Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
 
 ## Changelog
+- 1.0.6: fixed it just Not Working
 - 1.0.5: updated compat, nerfed gup
 - 1.0.4: Added simulacrum boss health multiplier before wave 50 (forgot)
 - 1.0.3: Stops vfx after level 100 to prevent lag/sfx spam
