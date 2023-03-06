@@ -13,9 +13,10 @@ Also changes simulacrum to be much faster paced. Aim for wave 50!
 ## How it works
 <a href="https://www.youtube.com/watch?v=W0VlysVaudI">![Video](https://media.discordapp.net/attachments/515678821408571392/1077735348014153798/RoR2__Downpour_Difficulty_Scale_Comparison_0-24_screenshot.png?width=1098&height=618)</a>
 
-<center>(Click for video)</center>
+(Click for video)
 
 ## How it works (for nerds)
+<details><summary>(Math inbound)</summary>
 Lets look at vanilla scaling first.
 
 ![Vanilla Scaling Function](https://cdn.discordapp.com/attachments/515678914316861451/1075613757180481656/image.png)
@@ -51,6 +52,7 @@ Finally, Simulacrum.
 ![Simulacrum Downpour Scaling Function](https://media.discordapp.net/attachments/515678914316861451/1075802566190968932/image.png)
 
 With the fast simulacrum changes and by making it use the default scaling function with modifiers, Difficulties feel just like the one from the base game, making it more seamless to play. All values with "Scaling" on it is configurable.
+</details>
 
 ## Other simulacrum changes
 - Once all enemies are defeated, more enemies will be insta-spawned, so you can speed up the waves.
@@ -64,13 +66,17 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - [ResumeMusicPostTeleporter](https://thunderstore.io/package/prodzpod/ResumeMusicPostTeleporter/): Resumes stage music after the teleporter event has been completed. If you're rushing, you'll encounter a lot of silence.
 - [BetterMoonPillars](https://thunderstore.io/package/prodzpod/BetterMoonPillars/): Reworks moon pillars to be optional but rewards you with items and time. Makes the mithrix fight easier without looping.
 - [LittleGameplayTweaks](https://thunderstore.io/package/Wolfo/LittleGameplayTweaks/): Set `4ba - Simulacrum Ending > Ending Start Wave` and `4bb - Simulacrum Forced Boss > Forced Special Boss Start Wave` to `50` for a finite simulacrum experience.
+- [ConsistentStageFeatures](https://thunderstore.io/package/prodzpod/ConsistentStageFeatures/): Makes runs a bit more reliable.
+- [ProperLoop](https://thunderstore.io/package/prodzpod/ProperLoop/): Stops Vields cheese.
+- [BossAntiSoftlock](https://thunderstore.io/package/JustDerb/BossAntiSoftlock/): Removes unfair situations where the boss is too far away for you to hit.
 
 ## Compatibility Stuff
 - [Raise Monster Level Cap](https://thunderstore.io/package/Moffein/Raise_Monster_Level_Cap/): Downpour already uncaps level. Having this mod will only apply to stuff you've disabled in Downpour's config.
 - [LittleGameplayTweaks](https://thunderstore.io/package/Wolfo/LittleGameplayTweaks/): Downpour will override its simulacrum scaling changes.
-- Well Rounded Balance: Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
+- [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/): Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
 
 ## Changelog
+- 1.0.7: proper [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/) support.
 - 1.0.6: fixed it just Not Working
 - 1.0.5: updated compat, nerfed gup
 - 1.0.4: Added simulacrum boss health multiplier before wave 50 (forgot)

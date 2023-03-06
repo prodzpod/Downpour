@@ -209,10 +209,9 @@ namespace Downpour
                 return true; // wrb scaling for rest
             }
 
-            // bless you aaron
             public static MethodBase TargetMethod()
             {
-                return AccessTools.DeclaredMethod(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all), $"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>b__12_0");
+                return AccessTools.DeclaredMethod(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all), $"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>b__10_0");
             }
         }
 
@@ -231,7 +230,7 @@ namespace Downpour
         }
         public static bool WRBTweaksOn() 
         {
-            return WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance.isEnabled; // based
+            return (Chainloader.PluginInfos[WellRoundedBalance.Main.PluginGUID].Instance as WellRoundedBalance.Main).ValidateMechanic(WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance); // based
         }
 
         public static float GetCoeff(float _, Run self)

@@ -24,7 +24,7 @@ namespace Downpour
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "prodzpod";
         public const string PluginName = "Downpour";
-        public const string PluginVersion = "1.0.6";
+        public const string PluginVersion = "1.0.7";
 
         public static ManualLogSource Log;
         public static Harmony Harmony;
