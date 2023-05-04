@@ -211,7 +211,7 @@ namespace Downpour
 
             public static MethodBase TargetMethod()
             {
-                return AccessTools.DeclaredMethod(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all), $"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>b__10_0");
+                return AccessTools.GetDeclaredMethods(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all)).Find(x => x.Name.StartsWith($"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>"));
             }
         }
 
