@@ -230,7 +230,7 @@ namespace Downpour
         }
         public static bool WRBTweaksOn() 
         {
-            return (Chainloader.PluginInfos[WellRoundedBalance.Main.PluginGUID].Instance as WellRoundedBalance.Main).ValidateMechanic(WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance); // based
+            return WellRoundedBalance.Initialize.Validate(WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance as WellRoundedBalance.Mechanics.MechanicBase); // based
         }
 
         public static float GetCoeff(float _, Run self)
