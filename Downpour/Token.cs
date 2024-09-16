@@ -98,7 +98,7 @@ namespace Downpour
 
             float mult = (DownpourPlugin.ScalingDrizzle.Value - DownpourPlugin.ScalingMonsoon.Value) / 2;
             float init = DownpourPlugin.ScalingDrizzle.Value + mult;
-            return GetScalingInternal(Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value);
+            return GetScalingInternal(Mathf.Min(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value);
         }
         public static float GetScalingInternal(float orig, bool simulacrum, float simulinit, float simulmult)
         {
@@ -110,10 +110,9 @@ namespace Downpour
             if (DownpourPlugin.BrimstoneList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingBrimstone.Value, simulacrum, DownpourPlugin.SimulacrumBaseBrimstone.Value, DownpourPlugin.SimulacrumScalingBrimstone.Value) * DownpourPlugin.TempScalingBrimstone.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScalingBrimstone.Value : 1);
             if (DownpourPlugin.DownpourList.Contains(def)) return GetScalingInternal(DownpourPlugin.ScalingDownpour.Value, simulacrum, DownpourPlugin.SimulacrumBaseDownpour.Value, DownpourPlugin.SimulacrumScalingDownpour.Value) * DownpourPlugin.TempScalingDownpour.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScalingDownpour.Value : 1);
             if (def.nameToken == "INFERNO_NAME") return GetScalingInternal(DownpourPlugin.ScalingInferno.Value, simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value) * DownpourPlugin.TempScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScaling.Value : 1);
-
             float mult = (DownpourPlugin.ScalingDrizzle.Value - DownpourPlugin.ScalingMonsoon.Value) / 2;
             float init = DownpourPlugin.ScalingDrizzle.Value + mult;
-            return GetScalingInternal(Mathf.Max(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value) * DownpourPlugin.TempScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScaling.Value : 1);
+            return GetScalingInternal(Mathf.Min(DownpourPlugin.ScalingMax.Value, init - (mult * def.scalingValue)), simulacrum, DownpourPlugin.SimulacrumBase.Value, DownpourPlugin.SimulacrumScaling.Value) * DownpourPlugin.TempScaling.Value * (simulacrum ? DownpourPlugin.SimulacrumTempScaling.Value : 1);
         }
     }
     public static class Extension

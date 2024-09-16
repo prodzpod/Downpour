@@ -1,6 +1,6 @@
 {
   "name": "Downpour",
-  "version_number": "1.0.9",
+  "version_number": "1.0.10",
   "website_url": "https://github.com/prodzpod/Downpour",
   "description": "Fighting Time itself: Custom difficulty and scaling overhaul mod that encourages faster gameplay. Highly configurable.",
   "dependencies": [

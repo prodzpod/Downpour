@@ -24,8 +24,8 @@ namespace Downpour
         {
             Run.onRunStartGlobal += (run) => { if (DownpourPlugin.DEBUG) targetTime = DownpourPlugin.AutoAdvance[0].Value * 60f; lastStageTime = 0; trueAmbientLevelFloor = -1; previousAmbientLevelFloor = -1; Run.ambientLevelCap = int.MaxValue; };
             Stage.onStageStartGlobal += (stage) => { lastStageTime = Run.instance.GetRunStopwatch(); };
-            if (Chainloader.PluginInfos.ContainsKey("com.Wolfo.LittleGameplayTweaks")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWolfoSimu));
-            if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWRB));
+            // if (Chainloader.PluginInfos.ContainsKey("com.Wolfo.LittleGameplayTweaks")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWolfoSimu));
+            // if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance")) DownpourPlugin.Harmony.PatchAll(typeof(PatchWRB));
             On.RoR2.LevelUpEffectManager.OnRunAmbientLevelUp += (orig, run) => { if (run.ambientLevelFloor > 100) return; orig(run); };
             On.RoR2.LevelUpEffectManager.OnCharacterLevelUp += (orig, body) => { if (body?.teamComponent?.teamIndex != null && body.teamComponent.teamIndex != TeamIndex.Player && Run.instance.ambientLevelFloor > 100) return; orig(body); };
         }
@@ -164,7 +164,7 @@ namespace Downpour
 
             public static MethodBase TargetMethod()
             {
-                return AccessTools.DeclaredMethod(typeof(Inferno.Main).GetNestedType("<>c", AccessTools.all), "<Awake>b__158_0");
+                return AccessTools.DeclaredMethod(typeof(Inferno.Main).GetNestedType("<>c", AccessTools.all), "<Awake>b__165_0");
             }
         }
 
@@ -176,6 +176,7 @@ namespace Downpour
                 ILCursor c = new(il);
                 c.GotoNext(x => x.MatchLdloc(2));
                 c.Index++;
+                c.Index++;  
                 while (c.Next.OpCode != OpCodes.Stloc_3) c.Remove();
                 c.EmitDelegate<Func<DifficultyDef, bool>>(diff =>
                 {
@@ -184,22 +185,7 @@ namespace Downpour
             }
         }
 
-        [HarmonyPatch]
-        public class PatchWolfoSimu
-        {
-            public static bool Prefix(ref On.RoR2.InfiniteTowerRun.orig_RecalculateDifficultyCoefficentInternal orig, ref InfiniteTowerRun self)
-            {
-                if (Enabled(self)) { orig(self); return false; }
-                return true;
-            }
-
-            // bless you aaron
-            public static MethodBase TargetMethod()
-            {
-                return AccessTools.DeclaredMethod(typeof(LittleGameplayTweaks.LittleGameplayTweaks).GetNestedType("<>c", AccessTools.all), $"<{nameof(LittleGameplayTweaks.LittleGameplayTweaks.SimuChanges)}>b__273_2");
-            }
-        }
-
+        /*
         [HarmonyPatch]
         public class PatchWRB
         {
@@ -214,6 +200,7 @@ namespace Downpour
                 return AccessTools.GetDeclaredMethods(typeof(WellRoundedBalance.Mechanics.Scaling.TimeScaling).GetNestedType("<>c", AccessTools.all)).Find(x => x.Name.StartsWith($"<{nameof(WellRoundedBalance.Mechanics.Scaling.TimeScaling.ChangeBehavior)}>"));
             }
         }
+        */
 
         public static bool Enabled(Run run) { return Enabled(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty), run is InfiniteTowerRun); }
         public static bool Enabled(DifficultyDef def, bool isSimulacrum)
@@ -221,17 +208,19 @@ namespace Downpour
             if (!DownpourPlugin.DownpourList.Contains(def)) // enables
             {
                 if (def.nameToken == "SUNNY_NAME") return false;
-                if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance") && !isSimulacrum && WRBTweaksOn()) return false;
+                // if (Chainloader.PluginInfos.ContainsKey("BALLS.WellRoundedBalance") && !isSimulacrum && WRBTweaksOn()) return false;
                 if (def.nameToken == "INFERNO_NAME") { if (!DownpourPlugin.EnableInferno.Value) return false; }
                 else { if (!DownpourPlugin.EnableRework.Value) return false; }
             }
             DownpourPlugin.Log.LogDebug("Downpour is enabled for " + Language.GetString(def.nameToken));
             return true;
         }
+        /*
         public static bool WRBTweaksOn() 
         {
             return WellRoundedBalance.Initialize.Validate(WellRoundedBalance.Mechanics.Scaling.TimeScaling.instance as WellRoundedBalance.Mechanics.MechanicBase); // based
         }
+        */
 
         public static float GetCoeff(float _, Run self)
         {

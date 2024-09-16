@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
@@ -53,6 +53,9 @@
 	  </Reference>
 	  <Reference Include="RoR2BepInExPack">
 	    <HintPath>..\..\libs\RoR2BepInExPack-nstrip.dll</HintPath>
+	  </Reference>
+	  <Reference Include="SimulacrumAdditions">
+	    <HintPath>..\..\libs\SimulacrumAdditions-nstrip.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Unity.Addressables">
 	    <HintPath>..\..\libs\Unity.Addressables-nstrip.dll</HintPath>

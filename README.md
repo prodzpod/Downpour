@@ -1,6 +1,6 @@
 # Downpour: Fighting Time
 
-![Remember that as time increases, so does difficulty.](https://cdn.discordapp.com/attachments/567832879879553037/1075841504834224239/image.png)
+![Remember that as time increases, so does difficulty.](https://raw.githubusercontent.com/prodzpod/Downpour/master/1.png)
 
 > Also known as "Woolie's Paradise" by nobody
 
@@ -11,7 +11,7 @@ Also changes simulacrum to be much faster paced. Aim for wave 50!
 +Also changes gup to be less tanky but more dangerous on split.
 
 ## How it works
-<a href="https://www.youtube.com/watch?v=W0VlysVaudI">![Video](https://media.discordapp.net/attachments/515678821408571392/1077735348014153798/RoR2__Downpour_Difficulty_Scale_Comparison_0-24_screenshot.png?width=1098&height=618)</a>
+<a href="https://www.youtube.com/watch?v=W0VlysVaudI">![Video](https://raw.githubusercontent.com/prodzpod/Downpour/master/2.png)</a>
 
 (Click for video)
 
@@ -19,37 +19,36 @@ Also changes simulacrum to be much faster paced. Aim for wave 50!
 <details><summary>(Math inbound)</summary>
 Lets look at vanilla scaling first.
 
-![Vanilla Scaling Function](https://cdn.discordapp.com/attachments/515678914316861451/1075613757180481656/image.png)
+![Vanilla Scaling Function](https://raw.githubusercontent.com/prodzpod/Downpour/master/3.png)
 
 It looks daunting at first, but to point out the important parts:
-- Every stage advancement multiplies the total level by 1.15.
-- Difficulty scales linearly based on time.
-- Therefore, stage number becomes crucially important, while how much you spend in each stage does not matter as much.
+- Every stage advancement **multiplies exponentially** the total level by 1.15.
+- Difficulty scales **linearly** based on time. (Therefore, stage number becomes crucially important, while how much you spend in each stage does not matter as much.)
 - Level stops scaling at 99.
 
 This leads to full clearing the stage being objectively more beneficial than rushing, players often do not have to think whether to move fast or farm money for items to stay ahead of the curve. Also, since stage advancement is the only exponential source, you outscale the enemies easily after the first 5 stages. This makes looping feel boring often. With the level cap, this problem is exacerbated.
 
 Now, let's look at vanilla's Simulacrum scaling.
 
-![Vanilla Simulacrum Scaling Function](https://cdn.discordapp.com/attachments/515678914316861451/1075614653444534322/image.png)
+![Vanilla Simulacrum Scaling Function](https://raw.githubusercontent.com/prodzpod/Downpour/master/4.png)
 
 This one does not take players or time into account at all. This makes some sense since Simulacrum wasn't meant to be played with people. Anyways, neither of the scaling functions are fast enough to keep up with the exponentially scaling player.
 
 Okay, time for Downpour's changes. starting with normal runs...
 
-![Downpour Scaling Function](https://cdn.discordapp.com/attachments/515678914316861451/1075619161855758407/image.png) 
+![Downpour Scaling Function](https://raw.githubusercontent.com/prodzpod/Downpour/master/5.png) 
 
 Even scarier, but here's the important part:
-- Time now scales exponentially, the position of stage and time has been essentially swapped.
-- Time scaling is split into two kinds of scaling: Permanent and Temporary. temporary scaling is reset every time you enter a new stage.
-- Stage scaling is now linear, and adds onto the difficulty. in vanilla setting, every difficulty starts easier on the first stage, but scaling is faster than vanilla on fourth and onwards.
+- Time now scales **exponentially**, the position of stage and time has been essentially swapped.
+- Time scaling is split into two kinds of scaling: Permanent and Temporary. **temporary scaling is reset** every time you enter a new stage.
+- Stage scaling is now **linear**, and adds onto the difficulty. in vanilla setting, every difficulty starts easier on the first stage, but scaling is faster than vanilla on fourth and onwards.
 - Player scaling is less, though more multiplayer testing is needed for this.
 
 Generally you're expected to keep up with the permanent scaling, denoted by "Exponential Difficulty Scaling" in the game. Don't be discouraged if you fall behind on Downpour (difficulty) though, it's meant to do that.
 
 Finally, Simulacrum.
 
-![Simulacrum Downpour Scaling Function](https://media.discordapp.net/attachments/515678914316861451/1075802566190968932/image.png)
+![Simulacrum Downpour Scaling Function](https://raw.githubusercontent.com/prodzpod/Downpour/master/6.png)
 
 With the fast simulacrum changes and by making it use the default scaling function with modifiers, Difficulties feel just like the one from the base game, making it more seamless to play. All values with "Scaling" on it is configurable.
 </details>
@@ -76,6 +75,7 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/): Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
 
 ## Changelog
+- 1.0.10: made to work with SotS (and current inferno version)
 - 1.0.9: proper [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/) support (again, hifuh stop breaking downpour !!!!!!!!!!!!!!!!!)
 - 1.0.8: proper [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/) support + futureproofing.
 - 1.0.7: proper [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/) support.
