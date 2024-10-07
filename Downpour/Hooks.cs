@@ -150,41 +150,6 @@ namespace Downpour
             }
         }
 
-        [HarmonyPatch]
-        public class InfernoButCringePatch
-        {
-            public static void ILManipulator(ILContext il)
-            {
-                ILCursor c = new(il);
-                c.GotoNext(x => x.MatchLdarg(1));
-                c.Index++;
-                while (c.Next.OpCode != OpCodes.Stloc_0) c.Remove();
-                c.EmitDelegate<Func<Run, bool>>(run => { return run.selectedDifficulty == Inferno.Main.InfernoDiffIndex || DownpourPlugin.BrimstoneList.Contains(DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty)); });
-            }
-
-            public static MethodBase TargetMethod()
-            {
-                return AccessTools.DeclaredMethod(typeof(Inferno.Main).GetNestedType("<>c", AccessTools.all), "<Awake>b__165_0");
-            }
-        }
-
-        [HarmonyPatch(typeof(Inferno.Unlocks.BasePerSurvivorClearGameInfernoAchievement), nameof(Inferno.Unlocks.BasePerSurvivorClearGameInfernoAchievement.OnClientGameOverGlobal))]
-        public class BrimstoneAchievementPatch
-        {
-            public static void ILManipulator(ILContext il)
-            {
-                ILCursor c = new(il);
-                c.GotoNext(x => x.MatchLdloc(2));
-                c.Index++;
-                c.Index++;  
-                while (c.Next.OpCode != OpCodes.Stloc_3) c.Remove();
-                c.EmitDelegate<Func<DifficultyDef, bool>>(diff =>
-                {
-                    return diff != null && (diff == Inferno.Main.InfernoDiffDef || DownpourPlugin.BrimstoneList.Contains(diff));
-                });
-            }
-        }
-
         /*
         [HarmonyPatch]
         public class PatchWRB

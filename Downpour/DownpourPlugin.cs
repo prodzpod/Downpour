@@ -23,7 +23,7 @@ namespace Downpour
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "prodzpod";
         public const string PluginName = "Downpour";
-        public const string PluginVersion = "1.0.8";
+        public const string PluginVersion = "1.0.12";
 
         public static ManualLogSource Log;
         public static Harmony Harmony;
@@ -103,7 +103,7 @@ namespace Downpour
             ScalingDrizzle = Config.Bind("Difficulty Rework", "Drizzle Scaling Seconds", 600f, "Will be used with monsoon to calculate all difficulty.");
             ScalingMonsoon = Config.Bind("Difficulty Rework", "Monsoon Scaling Seconds", 300f, "Will be used with drizzle to calculate all difficulty.");
             ScalingInferno = Config.Bind("Difficulty Rework", "Inferno Scaling Seconds", 300f, "Special exception. set to 0 to disable.");
-            ScalingMax = Config.Bind("Difficulty Rework", "Max Scaling Seconds", 300f, "Any def above it won't increase. Used to mitigate negative/zero.");
+            ScalingMax = Config.Bind("Difficulty Rework", "Max Scaling Seconds", 1200f, "Any def above it won't increase. Used to mitigate negative/zero.");
             TempScaling = Config.Bind("Difficulty Rework", "Temporary Scaling Multiplier", 1f, "Scaling value that dissipates on next stage. Lower = harder.");
             InitialScaling = Config.Bind("Difficulty Rework", "Initial Scaling", -0.5f, "Default: Monsoon starts as thunderstorm, and ends(stage 5) on typhoon");
             StageScaling = Config.Bind("Downpour", "Stage Scaling Multiplier", 0.25f, "Default: rainstorm will become monsoon on stage 5.");
@@ -166,8 +166,6 @@ namespace Downpour
             BrimstoneIndex = DifficultyAPI.AddDifficulty(Brimstone);
             DownpourList.Add(Brimstone);
             BrimstoneList.Add(Brimstone);
-            Harmony.PatchAll(typeof(Hooks.InfernoButCringePatch));
-            Harmony.PatchAll(typeof(Hooks.BrimstoneAchievementPatch));
             Token.PatchBrimstone();
         }
     }

@@ -24,16 +24,16 @@ namespace Downpour
             {
                 if (token == "BRIMSTONE_DESC")
                 {
-                    string str = "<style=cStack>>Player Health Regeneration: <style=cIsHealth>-40%</style>\n";
-                    if (Inferno.Main.Scaling.Value > 0f && Inferno.Main.Scaling.Value != 100f) str += $">Difficulty Scaling: <style={(Inferno.Main.Scaling.Value < 100f ? "cIsHealing" : "cIsHealth")}>{PercentFormat((Inferno.Main.Scaling.Value - 100f) / 100f)}% + Endless</style>\n";
-                    if (Inferno.Main.LevelAttackSpeed.Value > 0f || Inferno.Main.LevelMoveSpeed.Value > 0f || Inferno.Main.LevelRegen.Value > 0) str += ">Enemy Stats: <style=cIsHealth>Constantly Increasing</style>\n";
-                    if (Inferno.Main.ProjectileSpeed.Value > 1f) str += ">Enemy Projectile Speed: <style=cIsHealth>+" + ((Inferno.Main.ProjectileSpeed.Value - 1f) * 100f) + "%</style>\n";
-                    if (Inferno.Main.EnableCDirector.Value) str += ">Combat Director: <style=cIsHealth>Resourceful</style>\n";
-                    if (Inferno.Main.LevelDiffBoost.Value > 0f) str += ">Starting Difficulty: <style=cIsHealth>Increased</style>\n";
-                    if (Inferno.Main.EnableSkills.Value || Inferno.Main.EnableStats.Value) str += ">Enemy Abilities: <style=cIsHealth>Improved</style>\n";
-                    if (Inferno.Main.EnableAI.Value) str += ">Enemy AI: <style=cIsHealth>Refined" + (Inferno.Main.AIScaling.Value > 0f ? " + Evolving</style>\n" : "</style>\n");
-                    if (Inferno.Main.MonsterLimit.Value != 40f) str += ">Enemy Cap: <style=cIsHealth>" + (Inferno.Main.MonsterLimit.Value > 40f ? "+" : "") + ((Inferno.Main.MonsterLimit.Value - 40f) * 2.5f) + "%</style>\n";
-                    if (Inferno.Main.AllyPermanentDamage.Value > 0f) str += ">Allies receive <style=cIsHealth>permanent damage</style>\n";
+                    string str = "<style=cStack>>Player Health Regeneration: <style=cDeath>-40%</style>\n";
+                    if (Inferno.Main.Scaling.Value > 0f && Inferno.Main.Scaling.Value != 100f) str += $">Difficulty Scaling: <style={(Inferno.Main.Scaling.Value < 100f ? "cIsHealing" : "cDeath")}>{PercentFormat((Inferno.Main.Scaling.Value - 100f) / 100f)}% + Endless</style>\n";
+                    if (Inferno.Main.LevelAttackSpeed.Value > 0f || Inferno.Main.LevelMoveSpeed.Value > 0f || Inferno.Main.LevelRegen.Value > 0) str += ">Enemy Stats: <style=cDeath>Constantly Increasing</style>\n";
+                    if (Inferno.Main.ProjectileSpeed.Value > 1f) str += ">Enemy Projectile Speed: <style=cDeath>+" + ((Inferno.Main.ProjectileSpeed.Value - 1f) * 100f) + "%</style>\n";
+                    if (Inferno.Main.EnableCDirector.Value) str += ">Combat Director: <style=cDeath>Resourceful</style>\n";
+                    if (Inferno.Main.LevelDiffBoost.Value > 0f) str += ">Starting Difficulty: <style=cDeath>Increased</style>\n";
+                    if (Inferno.Main.EnableSkills.Value || Inferno.Main.EnableStats.Value) str += ">Enemy Abilities: <style=cDeath>Improved</style>\n";
+                    if (Inferno.Main.EnableAI.Value) str += ">Enemy AI: <style=cDeath>Refined" + (Inferno.Main.AIScaling.Value > 0f ? " + Evolving</style>\n" : "</style>\n");
+                    if (Inferno.Main.MonsterLimit.Value != 40f) str += ">Enemy Cap: <style=cDeath>" + (Inferno.Main.MonsterLimit.Value > 40f ? "+" : "") + ((Inferno.Main.MonsterLimit.Value - 40f) * 2.5f) + "%</style>\n";
+                    if (Inferno.Main.AllyPermanentDamage.Value > 0f) str += ">Allies receive <style=cDeath>permanent damage</style>\n";
                     return orig(self, token).Replace("{INFERNO}", str + "</style>");
                 }
                 return orig(self, token);
@@ -66,10 +66,11 @@ namespace Downpour
             }
             #endregion
             string str = "<style=cStack>";
-            float baseScaling = GetBaseScaling(def); if (baseScaling != 0) str += $">Difficulty Scaling: <style={(baseScaling < 0 ? "cIsHealing" : "cIsHealth")}>{PercentFormat(baseScaling)}%</style>\n";
-            float stageScaling = GetStageScaling(def, simulacrum); if (stageScaling != 0) str += $">Linear Difficulty Scaling: <style={(stageScaling < 0 ? "cIsHealing" : "cIsHealth")}>{PercentFormat(stageScaling)}% per stage</style>\n";
-            float scaling = GetScaling(def, simulacrum); if (scaling != 0) str += $">Exponential Difficulty Scaling:\n    <style=cIsHealth>x115% every {scaling / 60} minute{(scaling > 60 ? "s" : "")}</style>\n";
-            float tempScaling = GetTempScaling(def, simulacrum); if (tempScaling != 0) str += $">Temporary Difficulty Scaling:\n    <style=cIsHealth>x115% every {tempScaling / 60} minute{(tempScaling > 60 ? "s" : "")}, resets every stage</style>\n";
+            string style = def.nameToken == "INFERNO_NAME" || def.nameToken == "BRIMSTONE_NAME" ? "cDeath" : "cIsHealth";
+            float baseScaling = GetBaseScaling(def); if (baseScaling != 0) str += $">Difficulty Scaling: <style={(baseScaling < 0 ? "cIsHealing" : style)}>{PercentFormat(baseScaling)}%</style>\n";
+            float stageScaling = GetStageScaling(def, simulacrum); if (stageScaling != 0) str += $">Linear Difficulty Scaling: <style={(stageScaling < 0 ? "cIsHealing" : style)}>{PercentFormat(stageScaling)}% per stage</style>\n";
+            float scaling = GetScaling(def, simulacrum); if (scaling != 0) str += $">Exponential Difficulty Scaling:\n    <style={style}>x115% every {scaling / 60} minute{(scaling > 60 ? "s" : "")}</style>\n";
+            float tempScaling = GetTempScaling(def, simulacrum); if (tempScaling != 0) str += $">Temporary Difficulty Scaling:\n    <style={style}>x115% every {tempScaling / 60} minute{(tempScaling > 60 ? "s" : "")}, resets every stage</style>\n";
             if (extraSpaces.Contains(def.nameToken)) str = str.Substring(0, str.Length - 1); // remove trailing \n
             str += "</style>"; 
             return desc.Slice(0, idx) + str + desc.Slice(idx);
