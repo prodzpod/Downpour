@@ -23,7 +23,7 @@ namespace Downpour
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "prodzpod";
         public const string PluginName = "Downpour";
-        public const string PluginVersion = "1.0.12";
+        public const string PluginVersion = "1.0.13";
 
         public static ManualLogSource Log;
         public static Harmony Harmony;
@@ -160,7 +160,7 @@ namespace Downpour
         }
         public static void AddInfernoVariant()
         {
-            Brimstone = new(3f, "BRIMSTONE_NAME", "BRIMSTONE_ICON", "BRIMSTONE_DESC", new Color32(213, 145, 242, 255), "BS", false);
+            Brimstone = new(Inferno.Main.Scaling.Value, "BRIMSTONE_NAME", "BRIMSTONE_ICON", "BRIMSTONE_DESC", new Color32(213, 145, 242, 255), "BS", false);
             Brimstone.iconSprite = AssetBundle.LoadAsset<Sprite>("Assets/brimstone.png");
             Brimstone.foundIconSprite = true;
             BrimstoneIndex = DifficultyAPI.AddDifficulty(Brimstone);

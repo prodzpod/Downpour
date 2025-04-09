@@ -45,6 +45,7 @@ namespace Downpour
         {
             bool simulacrum = (PreGameController.instance?.gameModeIndex != null) && GameModeCatalog.GetGameModeName(PreGameController.instance.gameModeIndex).Contains("InfiniteTowerRun");
             if (!Hooks.Enabled(def, simulacrum)) return orig;
+            if (def.nameToken.StartsWith("ECLIPSE_")) return orig;
             DownpourPlugin.Log.LogDebug("Applying downpour description for Difficulty " + def.nameToken);
             Match m = Regex.Match(orig.ToLower(), ">\\s*difficulty\\s*scaling:\\s*<style=\\w+>.+?</style>");
             string desc = orig;

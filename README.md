@@ -75,6 +75,8 @@ With the fast simulacrum changes and by making it use the default scaling functi
 - [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/): Disable `Mechanics : Scaling` from WRB settings if you want Downpour scaling on non-downpour difficulties. Simulacrum will still be governed by Downpour settings.
 
 ## Changelog
+- 1.0.13: fixed inferno description and brimstone scaling config
+- 1.0.12: readme
 - 1.0.11: finally... i am free
 - 1.0.10: made to work with SotS (and current inferno version)
 - 1.0.9: proper [WellRoundedBalance](https://thunderstore.io/package/TheBestAssociatedLargelyLudicrousSillyheadGroup/WellRoundedBalance/) support (again, hifuh stop breaking downpour !!!!!!!!!!!!!!!!!)
